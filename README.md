@@ -1,6 +1,6 @@
 <p align="center"> <img src="https://raw.githubusercontent.com/qeeqbox/xslt-injection/main/xslt-injection.png"></p>
 
-A threat actor may interfere with an application's processing of extensible stylesheet language transformations (XSLT) for markup language (XML) to read or modify data on the target
+A threat actor may interfere with an application's processing of extensible stylesheet language transformations (XSLT) for extensible markup language (XML) to read or modify data on the target
 
 ## Example #1
 1. Threat actor submits a malicious request to a target that has a vulnerable XSLT processor
