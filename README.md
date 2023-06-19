@@ -9,14 +9,12 @@ A threat actor may interfere with an application's processing of extensible styl
 ## Code
 #### Target-Logic
 ```java
-...
 Result result = new StreamResult(System.out);
 Source xslt = new StreamSource(new File("test.xslt"));
 Source xml = new StreamSource(new File("test.xml"));
 TransformerFactory factory = TransformerFactory.newInstance();
 Transformer transformer = factory.newTransformer(xslt);
 transformer.transform(xml, result);
-...
 ```
 
 #### Target-In
