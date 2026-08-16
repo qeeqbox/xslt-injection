@@ -51,8 +51,8 @@ Click the validate button
 The webapp reads the webapp.py file and outputs it
 <p align="center"> <img src="https://raw.githubusercontent.com/qeeqbox/xslt-injection/main/content/6.png"></p>
 
-When a user hits the validate button, a post request is sent that includes both XML and XSL content to the webapp to validate
 ## Code
+When a user hits the validate button, a post request is sent that includes both XML and XSL content to the webapp to validate
 ```js
 function update_settings(settings,style) {
 $.ajax({
