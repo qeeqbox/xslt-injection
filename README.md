@@ -38,13 +38,68 @@ Run the webapp using Python
 ```sh
 python3 xslt-injection/vulnerable-web-app/webapp.py
 ```
+Enable the edit option in the config.xml
+<p align="center"> <img src="https://raw.githubusercontent.com/qeeqbox/xslt-injection/main/content/3.png"></p>
 Open the webapp in your browser 127.0.0.1:5142
 <p align="center"> <img src="https://raw.githubusercontent.com/qeeqbox/xslt-injection/main/content/1.png"></p>
 Use the default credentials (username: admin and password: admin) to login
 <p align="center"> <img src="https://raw.githubusercontent.com/qeeqbox/xslt-injection/main/content/2.png"></p>
+In the xsl template file section, change py:function('read', string(/config/config-file)) to py:function(read', 'webapp.py')"/></div>
+<p align="center"> <img src="https://raw.githubusercontent.com/qeeqbox/xslt-injection/main/content/4.png"></p>
+Click the validate button
+<p align="center"> <img src="https://raw.githubusercontent.com/qeeqbox/xslt-injection/main/content/5.png"></p>
+The webapp reads the webapp.py file and outputs it
+<p align="center"> <img src="https://raw.githubusercontent.com/qeeqbox/xslt-injection/main/content/6.png"></p>
 
+When a user hits the validate button, a post request is sent that includes both XML and XSL content to the webapp to validate
 ## Code
-When the user enters a hostname or IP to check their network connectivity, the webapp calls the add_ping() function. This function uses the internal ping OS command, the dynamic value from the user can contain a malicious payload that also gets executed by the host
-```py
-```
+```js
+function update_settings(settings,style) {
+$.ajax({
+    url : "config",
+    type : "post",
+    data: {"config-xml":settings,"config-xsl":style},
+    success:function(data){
+      if (data !== 'Error') {
+        $('#Settings-results').html(data)
+      }
+    },
+}); 
+}
 
+$('#config-button').on('click', function(e) {
+e.preventDefault()
+update_settings($('#config-xml-text').text(),$('#config-xsl-text').text())
+})
+````
+The post request data is sent to the validate_config() function
+```py
+elif parsed_url.path == "/config":
+    if "config-xml" in post_request_data and "config-xsl" in post_request_data:
+        self.send_content(200, [('Content-type', 'text/html')], self.validate_config(post_request_data["config-xml"][0],post_request_data["config-xsl"][0]))
+        return
+    if "config-timezone" in post_request_data:
+        self.send_content(200, [('Content-type', 'text/html')], self.update_config(post_request_data["config-timezone"][0]))
+```
+The validate_config() function handles the custom Python read function and outputs the requested file from the system
+```py
+def validate_config(self,settings=False,style=False):
+    ret = b""
+    try:
+        from lxml import etree
+        def python_function(context, function_name, argument):
+            if function_name == "read":
+                with open(path.join(PATH,argument),"r") as f:
+                    return f.read()
+            raise ValueError("Unsupported function")
+        ns = etree.FunctionNamespace("http://qeeqbox.com/python")
+        ns["function"] = python_function
+        parser = etree.XMLParser(resolve_entities=True)
+        config = etree.fromstring(settings.encode("utf-8"), parser)
+        xsl_doc = etree.fromstring(style.encode("utf-8"), parser)
+        transform = etree.XSLT(xsl_doc)
+        ret = etree.tostring(transform(config), encoding="utf-8")
+    except Exception as e:
+        ret = str(e).encode("utf-8")
+    return ret
+```
